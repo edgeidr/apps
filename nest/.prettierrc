@@ -1,0 +1,21 @@
+{
+	"trailingComma": "all",
+	"tabWidth": 4,
+	"printWidth": 120,
+	"bracketSameLine": true,
+	"useTabs": true,
+	"overrides": [
+		{
+			"files": "**/*.hbs",
+			"options": {
+				"parser": "lwc"
+			}
+		},
+		{
+			"files": "**/*.css.hbs",
+			"options": {
+				"parser": "css"
+			}
+		}
+	]
+}

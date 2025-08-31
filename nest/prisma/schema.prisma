@@ -1,0 +1,200 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum ActionScope {
+    ANY
+    OWN
+}
+
+enum OtpType {
+    FORGOT_PASSWORD
+}
+
+model User {
+    id        String   @id @default(cuid())
+    email     String
+    password  String
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    sessions            Session[]
+    userRoles           UserRole[]
+    userActions         UserAction[]
+    passwordResetTokens PasswordResetToken[]
+    otps                Otp[]
+    otpAttempts         OtpAttempt[]
+
+    @@map("users")
+}
+
+model App {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    url       String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    Role       Role[]
+    UserAction UserAction[]
+
+    @@map("apps")
+}
+
+model Role {
+    id        Int      @id @default(autoincrement())
+    name      String
+    appId     Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userRoles   UserRole[]
+    roleActions RoleAction[]
+    app         App          @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+    @@map("roles")
+}
+
+model Action {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    roleActions RoleAction[]
+    userActions UserAction[]
+
+    @@map("actions")
+}
+
+model UserRole {
+    userId String
+    roleId Int
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+    @@id([userId, roleId])
+    @@map("user_roles")
+}
+
+model UserAction {
+    userId   String
+    actionId Int
+    appId    Int
+    scope    ActionScope
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    action Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+    app    App    @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+    @@id([userId, actionId, appId])
+    @@map("user_actions")
+}
+
+model RoleAction {
+    roleId   Int
+    actionId Int
+
+    role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    action Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+    @@id([roleId, actionId])
+    @@map("role_actions")
+}
+
+model Session {
+    id        String   @id @default(cuid())
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accessToken  AccessToken?
+    refreshToken RefreshToken?
+
+    @@map("sessions")
+}
+
+model AccessToken {
+    id        Int      @id @default(autoincrement())
+    sessionId String   @unique
+    value     String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+    @@map("access_tokens")
+}
+
+model RefreshToken {
+    id        Int      @id @default(autoincrement())
+    sessionId String   @unique
+    value     String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+    @@map("refresh_tokens")
+}
+
+model Otp {
+    id        Int      @id @default(autoincrement())
+    code      String
+    type      OtpType
+    userId    String
+    used      Boolean  @default(false)
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("otps")
+}
+
+model PasswordResetToken {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    value     String   @unique
+    used      Boolean  @default(false)
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("password_reset_tokens")
+}
+
+model OtpAttempt {
+    id            Int       @id @default(autoincrement())
+    userId        String
+    type          OtpType
+    attempts      Int       @default(0)
+    lastAttemptAt DateTime  @default(now())
+    lockedUntil   DateTime?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, type])
+    @@map("otp_attempts")
+}
