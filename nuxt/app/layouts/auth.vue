@@ -2,7 +2,7 @@
 	<div class="flex min-h-screen flex-col">
 		<TheMain class="flex items-center justify-center py-8">
 			<div class="w-full max-w-md">
-				edgeidr
+				<div class="text-primary mb-2 text-xl font-bold">edgeidr.dev</div>
 
 				<slot />
 			</div>
