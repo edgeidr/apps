@@ -35,14 +35,14 @@
 	},
 	"footer": {
 		"nav": {
-			"about": "About Us",
+			"about": "About",
 			"contact": "Contact",
 			"news": "News",
 			"terms": "Terms and Conditions",
 			"privacy": "Privacy Policy",
 			"cookies": "Cookies Policy"
 		},
-		"description": "BoldrTech is your ecosystem of connected apps, built to help you work smarter, collaborate seamlessly, and achieve more — all in one powerful platform.",
+		"description": "edgeidr.dev is your ecosystem of connected apps, built to help you work smarter, collaborate seamlessly, and achieve more — all in one powerful platform.",
 		"rights": "All rights reserved"
 	},
 	"home": {
@@ -73,7 +73,7 @@
 		},
 		"forgotPassword": {
 			"title": "Forgot Password?",
-			"subtitle": "We’ll help you get back in",
+			"subtitle": "We'll help you get back in",
 			"labels": {
 				"email": "Email"
 			},
@@ -97,7 +97,7 @@
 		},
 		"resetPassword": {
 			"title": "Set New Password",
-			"subtitle": "Let’s finish resetting your login credentials",
+			"subtitle": "Let's finish resetting your login credentials",
 			"labels": {
 				"password": "New password",
 				"confirmPassword": "Confirm new password",
